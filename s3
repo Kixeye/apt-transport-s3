@@ -24,6 +24,7 @@ import urlparse
 import sys
 import syslog
 
+from boto.exception import S3ResponseError
 from boto.s3.connection import S3Connection
 from configobj import ConfigObj
 
@@ -187,13 +188,17 @@ class AWSCredentials(object):
 
         # Ugly hack to extract the bucket's location from the URL
         # (see 'https://github.com/boto/boto/issues/2741').
-        os.environ['S3_USE_SIGV4'] = 'True'
-        s3conn = S3Connection(self.access_key, self.secret_key,
-            security_token=self.token, is_secure=False, host=host[pos + 1:])
-        bucket = s3conn.get_bucket(bucket_name)
-        del os.environ['S3_USE_SIGV4']
+        try:
+            os.environ['S3_USE_SIGV4'] = 'True'
+            s3conn = S3Connection(self.access_key, self.secret_key,
+                security_token=self.token, is_secure=False, host=host[pos + 1:])
+            bucket = s3conn.get_bucket(bucket_name)
+            region = bucket.get_location().encode('utf-8')
+        except S3ResponseError as e:
+            raise Exception("S3 response error (%s %s)" % (e.status, e.reason))
+        finally:
+            del os.environ['S3_USE_SIGV4']
 
-        region = bucket.get_location().encode('utf-8')
         if not region:
             region = 'us-east-1'
 
@@ -259,7 +264,7 @@ class APTMessage(object):
         result = '{0} {1}\n'.format(self.code, self.MESSAGE_CODES[self.code])
         for item in self.headers.keys():
             if self.headers[item] is not None:
-                result += '{0}: {1}\n'.format(item, self.headers[item])
+                result += '{0}: {1}\n'.format(item, self.headers[item].rstrip())
         return result + '\n'
 
 
