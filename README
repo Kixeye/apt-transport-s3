@@ -32,6 +32,7 @@ access to AWS metadata server on 169.254.169.254.
 ## Requirements
 ### Additional package dependencies (except installed by default in Debian)
 1. python-configobj
+2. boto3
 
 ## Configuration
 /etc/apt/s3auth.conf or <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html">IAM role</a>
