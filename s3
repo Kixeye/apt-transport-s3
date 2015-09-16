@@ -174,17 +174,21 @@ class AWSCredentials(object):
         except urllib2.socket.timeout:
             raise Exception("Socket timeout")
 
-    def get_region(self, host):
-        # TODO: bucket name finding is ugly, I should find a way to support
-        # both naming conventions: http://bucket.s3.amazonaws.com/ and
-        # http://s3.amazonaws.com/bucket/
-        pos = host.find(".s3")
-        assert pos != -1
-        try:
-            bucket_name = host[:pos]
-        except:
+    #def get_region(self, host):
+    def get_region(self, url):
+        bucket = urlparse.urlparse(url)
+        if bucket.hostname.startswith('s3'):
+            # extract bucket name from path
+            #     s3.cn-north-1.amazonaws.com.cn/aws-access-logs/cloudfront
+            bucket_name = bucket.path.split('/')[1]
+        else:
+            # extract bucket name from hostname
+            #     aws-access-logs.s3.cn-north-1.amazonaws.com.cn/cloudfront
+            bucket_name = bucket.hostname.split('.')[0]
+
+        if not bucket_name:
             raise Exception("Can't establish bucket name based on the" \
-                + " hostname: %s" % host)
+                + " url: %s" % url)
 
         # Ugly hack to extract the bucket's location from the URL
         # (see 'https://github.com/boto/boto/issues/2741').
@@ -207,7 +211,7 @@ class AWSCredentials(object):
     def _request(self, url):
         request = urllib2.Request(url)
 
-        region = self.get_region(request.get_host())
+        region = self.get_region(url)
 
         # Create a date for headers and the credential string.
         t = datetime.datetime.utcnow()
