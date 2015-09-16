@@ -24,8 +24,8 @@ import urlparse
 import sys
 import syslog
 
-from boto.exception import S3ResponseError
-from boto.s3.connection import S3Connection
+import boto3
+
 from configobj import ConfigObj
 
 
@@ -194,11 +194,9 @@ class AWSCredentials(object):
         # (see 'https://github.com/boto/boto/issues/2741').
         try:
             os.environ['S3_USE_SIGV4'] = 'True'
-            s3conn = S3Connection(self.access_key, self.secret_key,
-                security_token=self.token, is_secure=False, host=host[pos + 1:])
-            bucket = s3conn.get_bucket(bucket_name)
-            region = bucket.get_location().encode('utf-8')
-        except S3ResponseError as e:
+            s3conn = boto3.client('s3', aws_access_key_id=self.access_key, aws_secret_access_key=self.secret_key,aws_session_token=self.token, use_ssl=False)
+            region = s3conn.get_bucket_location(Bucket=bucket_name)['LocationConstraint']
+        except Exception as e:
             raise Exception("S3 response error (%s %s)" % (e.status, e.reason))
         finally:
             del os.environ['S3_USE_SIGV4']
