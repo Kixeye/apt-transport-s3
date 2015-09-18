@@ -32,7 +32,6 @@ access to AWS metadata server on 169.254.169.254.
 ## Requirements
 ### Additional package dependencies (except installed by default in Debian)
 1. python-configobj
-2. boto3
 
 ## Configuration
 /etc/apt/s3auth.conf or <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html">IAM role</a>
@@ -55,3 +54,12 @@ specified using an s3:// prefix, for example:
 deb s3://aptbucketname.s3.amazonaws.com/repo/ trusty main contrib non-free
 deb s3://s3.amazonaws.com/aptbucketname/repo/ trusty main contrib non-free
 ```
+
+## Notes
+
+This has been tested on the following flavours:
+* Ubuntu 14.04 (Trusty)
+* Ubuntu 12.04 (Precise)
+
+This has been tested against the following regions:
+* cn-north-1

@@ -23,9 +23,9 @@ import urllib2
 import urlparse
 import sys
 import syslog
-
 import boto3
 
+from botocore.exceptions import ClientError
 from configobj import ConfigObj
 
 
@@ -174,7 +174,6 @@ class AWSCredentials(object):
         except urllib2.socket.timeout:
             raise Exception("Socket timeout")
 
-    #def get_region(self, host):
     def get_region(self, url):
         bucket = urlparse.urlparse(url)
         if bucket.hostname.startswith('s3'):
@@ -190,14 +189,12 @@ class AWSCredentials(object):
             raise Exception("Can't establish bucket name based on the" \
                 + " url: %s" % url)
 
-        # Ugly hack to extract the bucket's location from the URL
-        # (see 'https://github.com/boto/boto/issues/2741').
         try:
             os.environ['S3_USE_SIGV4'] = 'True'
-            s3conn = boto3.client('s3', aws_access_key_id=self.access_key, aws_secret_access_key=self.secret_key,aws_session_token=self.token, use_ssl=False)
+            s3conn = boto3.client('s3', aws_access_key_id=self.access_key, aws_secret_access_key=self.secret_key, aws_session_token=self.token, use_ssl=False)
             region = s3conn.get_bucket_location(Bucket=bucket_name)['LocationConstraint']
-        except Exception as e:
-            raise Exception("S3 response error (%s %s)" % (e.status, e.reason))
+        except ClientError as e:
+            raise Exception("S3 response error (%s)" % e.response['Error']['Code'])
         finally:
             del os.environ['S3_USE_SIGV4']
 
