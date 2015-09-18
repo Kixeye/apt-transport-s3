@@ -69,7 +69,7 @@ Example of an IAM Policy (noting the ARN differs in China):
                 "s3:GetObject"
             ],
             "Resource": [
-                "arn:aws:s3:::your-apt-repo-name-*/*"
+                "arn:aws:s3:::aptbucketname/*"
             ]
         }
     ]
