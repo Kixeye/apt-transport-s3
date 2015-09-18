@@ -46,6 +46,35 @@ Token = ''
 
 Token should be empty string.
 
+Example of an IAM Policy (noting the ARN differs in China):
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1247539516000",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucketLocation"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "Stmt1247539516001",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::your-apt-repo-name-*/*"
+            ]
+        }
+    ]
+}
+```
 ## Usage
 Install the .deb package from the releases page.  The bucket repo should be
 specified using an s3:// prefix, for example:
@@ -63,3 +92,5 @@ This has been tested on the following flavours:
 
 This has been tested against the following regions:
 * cn-north-1
+* us-west-1
+
