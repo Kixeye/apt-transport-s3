@@ -80,8 +80,9 @@ Install the .deb package from the releases page.  The bucket repo should be
 specified using an s3:// prefix, for example:
 
 ```
-deb s3://aptbucketname.s3.amazonaws.com/repo/ trusty main contrib non-free
 deb s3://s3.amazonaws.com/aptbucketname/repo/ trusty main contrib non-free
+deb s3://s3-us-west-1.amazonaws.com/aptbucketname/repo/ trusty main contrib non-free
+deb s3://s3.cn-north-1.amazonaws.com.cn/aptbucketname/repo/ trusty main contrib non-free
 ```
 
 ## Notes
