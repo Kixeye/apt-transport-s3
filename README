@@ -77,7 +77,8 @@ Example of an IAM Policy (noting the ARN differs in China):
 ```
 ## Usage
 Install the .deb package from the releases page.  The bucket repo should be
-specified using an s3:// prefix, for example:
+specified using an s3:// prefix and with a URL conforming to the standard for
+that [region](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region). For example:
 
 ```
 deb s3://s3.amazonaws.com/aptbucketname/repo/ trusty main contrib non-free
